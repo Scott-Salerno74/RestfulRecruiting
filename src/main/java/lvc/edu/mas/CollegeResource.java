@@ -44,7 +44,6 @@ public class CollegeResource {
      *
      * @return String that will be returned as a text/plain response.
      */
-    @Path("/{id}")
     @GET
     @Produces("application/json")
     public String getCollege() {
@@ -61,7 +60,7 @@ public class CollegeResource {
         String collegeString= college.get("sports").toString();
         String[] sportsArr = collegeString.split(",");
         //System.out.println(co[0] + co[1]);
-       College c = new College(Integer.parseInt( college.get("id").toString()),college.get("name").toString(),Integer.parseInt(college.get("numRecruitLimit").toString()),college.get("location").toString(),sportsArr);
+        College c = new College(Integer.parseInt( college.get("id").toString()),college.get("name").toString(),Integer.parseInt(college.get("numRecruitLimit").toString()),college.get("location").toString(),sportsArr);
         System.out.println(c.getName() + " " + c.getLocation());
     }
     @Path("/{id}")

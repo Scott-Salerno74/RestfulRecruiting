@@ -10,7 +10,7 @@ import java.io.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Root resource (exposed at "myresource" path)
+ * Root resource (exposed at "recruits" path)
  */
 @Path("recruits")
 public class RecruitResource {
@@ -43,7 +43,6 @@ public class RecruitResource {
      *
      * @return String that will be returned as a text/plain response.
      */
-    @Path("/{id}")
     @GET
     @Produces("application/json")
     public String getRecruit() {
