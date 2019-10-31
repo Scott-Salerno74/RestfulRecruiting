@@ -4,8 +4,9 @@ import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Main class.
@@ -34,12 +35,69 @@ public class Main {
      * @param args
      * @throws IOException
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+        //loadRecruits();
+        //loadColleges();
+
         final HttpServer server = startServer();
         System.out.println(String.format("Jersey app started with WADL available at "
                 + "%sapplication.wadl\nHit enter to stop it...", BASE_URI));
         System.in.read();
         server.stop();
+    }
+
+    /**
+     * Store Recruit Database
+     * @param database
+     * @throws IOException
+     */
+    public static void storeRecruits(ConcurrentHashMap<Integer,Recruit> database) throws IOException {
+        File file = new File("recruits.txt");
+        FileOutputStream out = new FileOutputStream(file);
+        ObjectOutputStream os = new ObjectOutputStream(out);
+        os.writeObject(database);
+        os.close();
+
+    }
+    /**
+     * Load in Recruit database
+     * @throws IOException
+     */
+
+    public static ConcurrentHashMap loadRecruits() throws IOException, ClassNotFoundException {
+        File file = new File("recruits.txt");
+        FileInputStream in = new FileInputStream(file);
+        ObjectInputStream inS = new ObjectInputStream(in);
+        ConcurrentHashMap<Integer,Recruit> database = (ConcurrentHashMap<Integer, Recruit>) inS.readObject();
+        inS.close();
+        return database;
+    }
+
+    /**
+     * Store College Database
+     * @param database
+     * @throws IOException
+     */
+    public static void storeColleges(ConcurrentHashMap<Integer,College> database) throws IOException {
+        File file = new File("colleges.txt");
+        FileOutputStream out = new FileOutputStream(file);
+        ObjectOutputStream os = new ObjectOutputStream(out);
+        os.writeObject(database);
+        os.close();
+
+    }
+    /**
+     * Load in database
+     * @throws IOException
+     */
+
+    public static ConcurrentHashMap loadColleges() throws IOException, ClassNotFoundException {
+        File file = new File("colleges.txt");
+        FileInputStream in = new FileInputStream(file);
+        ObjectInputStream inS = new ObjectInputStream(in);
+        ConcurrentHashMap<Integer,College> database = (ConcurrentHashMap<Integer, College>) inS.readObject();
+        inS.close();
+        return database;
     }
 }
 
