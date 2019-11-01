@@ -106,8 +106,8 @@ public class RecruitResource implements Serializable{
             id = new AtomicInteger(newID);
         }
     }
-//    public static void main(String[] args) throws IOException {
-//        ConcurrentHashMap<Integer,Recruit> update = storeRecruits(recruitConcurrentHashMap);
-//    }
+    public static void main(String[] args) throws IOException {
+        ConcurrentHashMap<Integer,Recruit> update = storeRecruits(recruitConcurrentHashMap);
+    }
     //hello Commit
 }

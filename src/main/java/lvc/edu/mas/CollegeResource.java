@@ -109,9 +109,9 @@ public class CollegeResource implements Serializable{
             id = new AtomicInteger(newID);
         }
     }
-//    public static void main(String[] args) throws IOException {
-//        ConcurrentHashMap<Integer,College> update = storeColleges(collegeConcurrentHashMap);
-//    }
+    public static void main(String[] args) throws IOException {
+        ConcurrentHashMap<Integer,College> update = storeColleges(collegeConcurrentHashMap);
+    }
 
 
 }
