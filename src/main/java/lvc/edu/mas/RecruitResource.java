@@ -37,14 +37,6 @@ public class RecruitResource implements Serializable{
      * @throws IOException
      */
 
-    public static ConcurrentHashMap loadRecruit() throws IOException, ClassNotFoundException {
-        File file = new File("recruits.txt");
-        FileInputStream in = new FileInputStream(file);
-        ObjectInputStream inS = new ObjectInputStream(in);
-        ConcurrentHashMap<Integer,Recruit> database = (ConcurrentHashMap<Integer, Recruit>) inS.readObject();
-        inS.close();
-        return database;
-    }
     /**
      * Method handling HTTP GET requests. The returned object will be sent
      * to the client as "text/plain" media type.
