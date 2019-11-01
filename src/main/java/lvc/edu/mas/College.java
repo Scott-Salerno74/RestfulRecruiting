@@ -1,6 +1,8 @@
 package lvc.edu.mas;
 
-public class College {
+import java.io.Serializable;
+
+public class College implements Serializable {
 private int id;
 private String name;
 private int numRecruitLimit;

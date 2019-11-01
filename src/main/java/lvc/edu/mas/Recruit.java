@@ -1,6 +1,8 @@
 package lvc.edu.mas;
 
-public class Recruit {
+import java.io.Serializable;
+
+public class Recruit implements Serializable {
     private int id;
     private String fName;
     private String lName;

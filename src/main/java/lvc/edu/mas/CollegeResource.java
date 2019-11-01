@@ -1,27 +1,31 @@
 package lvc.edu.mas;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import java.io.*;
+import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Root resource (exposed at "myresource" path)
  */
 @Path("colleges")
-public class CollegeResource {
+public class CollegeResource implements Serializable{
     private static ConcurrentHashMap<Integer,College> collegeConcurrentHashMap = new ConcurrentHashMap<>();
-    public static void storeColleges(ConcurrentHashMap<Integer,College> database) throws IOException {
+    public static AtomicInteger id = new AtomicInteger(0);
+    public static ConcurrentHashMap<Integer, College> storeColleges(ConcurrentHashMap<Integer,College> database) throws IOException {
         File file = new File("colleges.txt");
         FileOutputStream out = new FileOutputStream(file);
         ObjectOutputStream os = new ObjectOutputStream(out);
         os.writeObject(database);
         os.close();
 
+        return database;
     }
     /**
      * Load in database
@@ -46,32 +50,68 @@ public class CollegeResource {
      */
     @GET
     @Produces("application/json")
-    public String getCollege() {
-        JSONObject response = null;
-        return  response.toJSONString();
+    public String getCollege() throws IOException, ClassNotFoundException {
+        ObjectMapper mapper = new ObjectMapper();
+        StringBuilder response = new StringBuilder();
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonResponse = new JSONObject();
+        //Loop through concurrent hashmap and add to string response
+        for(int i = 1; i <= collegeConcurrentHashMap.size(); i++){
+            College c = (College) collegeConcurrentHashMap.get(i);
+            String json = mapper.writeValueAsString(c);
+            jsonArray.add(json);
+
+        }
+        jsonResponse.put("colleges",jsonArray);
+        return jsonResponse.toJSONString();
     }
 
-    @Path("/{id}")
     @POST
     @Produces("application/json")
-    public void addCollege(String collegeJson) throws ParseException {
+    public void addCollege(String collegeJson) throws ParseException, IOException {
+        int newId = id.incrementAndGet();
         JSONParser parser = new JSONParser();
         JSONObject college = (JSONObject) parser.parse(collegeJson);
         String collegeString= college.get("sports").toString();
         String[] sportsArr = collegeString.split(",");
         //System.out.println(co[0] + co[1]);
-        College c = new College(Integer.parseInt( college.get("id").toString()),college.get("name").toString(),Integer.parseInt(college.get("numRecruitLimit").toString()),college.get("location").toString(),sportsArr);
+        College c = new College(newId,college.get("name").toString(),Integer.parseInt(college.get("numRecruitLimit").toString()),college.get("location").toString(),sportsArr);
+        collegeConcurrentHashMap.put(newId,c);
+        storeColleges(collegeConcurrentHashMap);
         System.out.println(c.getName() + " " + c.getLocation());
+        System.out.println(collegeConcurrentHashMap.get(2).getName() + " " + collegeConcurrentHashMap.get(2).getId() );
     }
     @Path("/{id}")
     @PUT
     @Produces("application/json")
-    public void changeCollegeInfo(String update) throws ParseException {
+    public void changeCollegeInfo(@PathParam("id") int id, String update) throws ParseException {
         JSONParser parser = new JSONParser();
         JSONObject college = (JSONObject) parser.parse(update);
         System.out.println(college.toJSONString());
 
     }
+    public static void initCollegeData() throws IOException, ClassNotFoundException {
+        File file = new File("colleges.txt");
+        FileInputStream in = new FileInputStream(file);
+        ObjectInputStream inS = new ObjectInputStream(in);
+        ConcurrentHashMap<Integer,College> database = (ConcurrentHashMap<Integer, College>) inS.readObject();
+        inS.close();
+
+        collegeConcurrentHashMap = database;
+
+        int initialId = 0;
+        Enumeration<Integer> keys = collegeConcurrentHashMap.keys();
+        while(keys.hasMoreElements()){
+            int newID = keys.nextElement();
+            if(newID > initialId) {
+                initialId = newID;
+            }
+            id = new AtomicInteger(newID);
+        }
+    }
+//    public static void main(String[] args) throws IOException {
+//        ConcurrentHashMap<Integer,College> update = storeColleges(collegeConcurrentHashMap);
+//    }
 
 
 }
