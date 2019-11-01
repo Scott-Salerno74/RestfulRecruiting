@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Root resource (exposed at "myresource" path)
+ * Root resource (exposed at "colleges" path)
  */
 @Path("colleges")
 public class CollegeResource implements Serializable{

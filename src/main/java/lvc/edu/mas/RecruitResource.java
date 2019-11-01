@@ -128,7 +128,7 @@ public class RecruitResource implements Serializable{
         StringBuilder response = new StringBuilder();
         JSONObject obj = new JSONObject();
         JSONObject jsonResponse = new JSONObject();
-        response.append(mapper.writeValueAsString(recruitConcurrentHashMap.get(id)));
+        response.append(mapper.writeValueAsString(recruitConcurrentHashMap.get(id).getRecruitedBy()));
         obj.put("College", response);
         jsonResponse.put("rel", "next");
         jsonResponse.put("href", Main.BASE_URI +"/colleges/" + id );
