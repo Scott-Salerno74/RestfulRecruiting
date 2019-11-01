@@ -25,6 +25,7 @@ public class Main {
         // in lvc.edu.mas package
         final ResourceConfig rc = new ResourceConfig().packages("lvc.edu.mas");
         RecruitResource.initRecruitData();
+        RecruitmentDataResource.initRecruitedData();
         CollegeResource.initCollegeData();
         // create and start a new instance of grizzly http server
         // exposing the Jersey application at BASE_URI

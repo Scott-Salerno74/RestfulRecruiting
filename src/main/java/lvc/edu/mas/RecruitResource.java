@@ -28,6 +28,9 @@ public class RecruitResource implements Serializable{
 
         return database;
     }
+    public static ConcurrentHashMap<Integer,Recruit> getRecruitData(){
+        return recruitConcurrentHashMap;
+    }
     /**
      * Load in database
      * @throws IOException
@@ -77,15 +80,85 @@ public class RecruitResource implements Serializable{
         System.out.println(r.getfName() + " " +r.getlName() + " " + r.getLocation() + " " + newID);
         System.out.println(recruitConcurrentHashMap.get(1).getfName());
     }
+    //Methods for specific Id numbers
     @Path("/{id}")
     @PUT
     @Produces("application/json")
-    public void changeRecruitInfo(String update) throws ParseException {
-        JSONParser parser = new JSONParser();
-        JSONObject college = (JSONObject) parser.parse(update);
-        System.out.println(college.toJSONString());
+    public void changeRecruitInfo( @PathParam("id") int id,  String update) throws ParseException, IOException {
+        JSONParser parse = new JSONParser();
+        JSONObject obj = new JSONObject();
+        obj = (JSONObject) parse.parse(update);
+        if (obj.containsKey("lName")){
+            recruitConcurrentHashMap.get(id).setlName( obj.get("lName").toString());
+        }
+        if (obj.containsKey("fName")){
+            recruitConcurrentHashMap.get(id).setfName( obj.get("fName").toString());
+        }
+        if (obj.containsKey("location")){
+            recruitConcurrentHashMap.get(id).setLocation( obj.get("location").toString());
+        }
+        if (obj.containsKey("recruitmentScore")){
+            recruitConcurrentHashMap.get(id).setRecruitmentScore( Integer.parseInt(obj.get("recruitmentScore").toString()));
+        }
+        if (obj.containsKey("schoolYear")){
+            recruitConcurrentHashMap.get(id).setSchoolYear( obj.get("schoolYear").toString());
+        }
+        if (obj.containsKey("sport")){
+            recruitConcurrentHashMap.get(id).setSport( obj.get("sport").toString());
+        }
+        storeRecruits(recruitConcurrentHashMap);
+    }
+    @Path("{id}")
+    @GET
+    @Produces("application/json")
+    public String getRecruitById(@PathParam("id") int id) throws IOException, ClassNotFoundException {
+        ObjectMapper mapper = new ObjectMapper();
+        StringBuilder response = new StringBuilder();
+        JSONObject jsonResponse = new JSONObject();
+        response.append(mapper.writeValueAsString(recruitConcurrentHashMap.get(id)));
+        jsonResponse.put("recruit", response);
+        return jsonResponse.toJSONString();
+    }
+
+    //Get Recruited By
+    @Path("{id}/recruitedBy")
+    @GET
+    public String getRecruitedBy(@PathParam("id") int id ) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        StringBuilder response = new StringBuilder();
+        JSONObject obj = new JSONObject();
+        JSONObject jsonResponse = new JSONObject();
+        response.append(mapper.writeValueAsString(recruitConcurrentHashMap.get(id).getRecruitedBy()));
+        obj.put("College", response);
+        jsonResponse.put("rel", "next");
+        jsonResponse.put("href", Main.BASE_URI +"/colleges/" + id );
+        jsonResponse.put("type","application/json");
+        return jsonResponse.toJSONString();
+
 
     }
+
+    //Get Query Params
+    @Path("/query")
+    @GET
+    public String searchRecruitBySport(@QueryParam("sport") String sportQuery) throws ParseException, IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        StringBuilder response = new StringBuilder();
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonResponse = new JSONObject();
+        //Loop through concurrent hash-map and add to string response
+        for(int i = 1; i <= recruitConcurrentHashMap.size(); i++){
+            if (recruitConcurrentHashMap.get(i).getSport().equalsIgnoreCase(sportQuery)){
+                String json = mapper.writeValueAsString(recruitConcurrentHashMap.get(i));
+                jsonArray.add(json);
+            }
+        }
+        jsonResponse.put("recruits",jsonArray);
+        return jsonResponse.toJSONString();
+
+
+    }
+
 
     public static void initRecruitData() throws IOException, ClassNotFoundException {
         File file = new File("recruits.txt");
@@ -109,5 +182,5 @@ public class RecruitResource implements Serializable{
 //    public static void main(String[] args) throws IOException {
 //        ConcurrentHashMap<Integer,Recruit> update = storeRecruits(recruitConcurrentHashMap);
 //    }
-    //hello Commit
+//    //hello Commit
 }

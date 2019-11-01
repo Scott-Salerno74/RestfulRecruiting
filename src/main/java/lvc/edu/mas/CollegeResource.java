@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Root resource (exposed at "myresource" path)
+ * Root resource (exposed at "colleges" path)
  */
 @Path("colleges")
 public class CollegeResource implements Serializable{
@@ -26,6 +26,9 @@ public class CollegeResource implements Serializable{
         os.close();
 
         return database;
+    }
+    public static  ConcurrentHashMap<Integer,College> getCollegeData(){
+        return collegeConcurrentHashMap;
     }
     /**
      * Load in database
@@ -81,15 +84,45 @@ public class CollegeResource implements Serializable{
         System.out.println(c.getName() + " " + c.getLocation());
         System.out.println(collegeConcurrentHashMap.get(2).getName() + " " + collegeConcurrentHashMap.get(2).getId() );
     }
+    // For Specific Player Ids
+
     @Path("/{id}")
     @PUT
     @Produces("application/json")
-    public void changeCollegeInfo(@PathParam("id") int id, String update) throws ParseException {
-        JSONParser parser = new JSONParser();
-        JSONObject college = (JSONObject) parser.parse(update);
-        System.out.println(college.toJSONString());
+    public void changeCollegeInfo(@PathParam("id") int id, String update) throws ParseException, IOException {
+        JSONParser parse = new JSONParser();
+        JSONObject obj = new JSONObject();
+        obj = (JSONObject) parse.parse(update);
+        if (obj.containsKey("name")){
+            collegeConcurrentHashMap.get(id).setName( obj.get("name").toString());
+        }
+        if (obj.containsKey("location")){
+            collegeConcurrentHashMap.get(id).setLocation( obj.get("location").toString());
+        }
+        if (obj.containsKey("sports")){
+            String collegeString= obj.get("sports").toString();
+            String[] sportsArr = collegeString.split(",");
+            collegeConcurrentHashMap.get(id).setAvailableSports(sportsArr);
+        }
+        if (obj.containsKey("numRecruitLimit")){
+            collegeConcurrentHashMap.get(id).setNumRecruitLimit( Integer.parseInt(obj.get("numRecruitLimit").toString()));
+        }
+
+        storeColleges(collegeConcurrentHashMap);
 
     }
+    @Path("{id}")
+    @GET
+    @Produces("application/json")
+    public String getCollegeById(@PathParam("id") int id) throws IOException, ClassNotFoundException {
+        ObjectMapper mapper = new ObjectMapper();
+        StringBuilder response = new StringBuilder();
+        JSONObject jsonResponse = new JSONObject();
+        response.append(mapper.writeValueAsString(collegeConcurrentHashMap.get(id)));
+        jsonResponse.put("colleges", response);
+        return jsonResponse.toJSONString();
+    }
+
     public static void initCollegeData() throws IOException, ClassNotFoundException {
         File file = new File("colleges.txt");
         FileInputStream in = new FileInputStream(file);
@@ -108,6 +141,25 @@ public class CollegeResource implements Serializable{
             }
             id = new AtomicInteger(newID);
         }
+    }
+    @Path("/query")
+    @GET
+    public String searchColleges(@QueryParam("name") String nameQuery) throws ParseException, IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        StringBuilder response = new StringBuilder();
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonResponse = new JSONObject();
+        //Loop through concurrent hash-map and add to string response
+        for(int i = 0; i <= collegeConcurrentHashMap.size() ;i++){
+            if (collegeConcurrentHashMap.get(i).getName().equalsIgnoreCase(nameQuery)){
+                String json = mapper.writeValueAsString(collegeConcurrentHashMap.get(i));
+                jsonArray.add(json);
+            }
+        }
+        jsonResponse.put("colleges",jsonArray);
+        return jsonResponse.toJSONString();
+
+
     }
 //    public static void main(String[] args) throws IOException {
 //        ConcurrentHashMap<Integer,College> update = storeColleges(collegeConcurrentHashMap);
