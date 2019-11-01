@@ -3,6 +3,7 @@ package lvc.edu.mas;
 import java.io.Serializable;
 
 public class RecruitedClass implements Serializable {
+    private static final long serialVersionUID = -3880773927836349705L;
     private College college;
     private Recruit recruit;
 
