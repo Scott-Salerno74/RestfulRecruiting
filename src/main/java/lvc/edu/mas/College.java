@@ -3,7 +3,8 @@ package lvc.edu.mas;
 import java.io.Serializable;
 
 public class College implements Serializable {
-private int id;
+    private static final long serialVersionUID = -5046553748071676274L;
+    private int id;
 private String name;
 private int numRecruitLimit;
 private String location;

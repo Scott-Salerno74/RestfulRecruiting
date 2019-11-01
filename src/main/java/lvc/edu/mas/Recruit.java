@@ -3,6 +3,7 @@ package lvc.edu.mas;
 import java.io.Serializable;
 
 public class Recruit implements Serializable {
+    private static final long serialVersionUID = -6261569056452316656L;
     private int id;
     private String fName;
     private String lName;

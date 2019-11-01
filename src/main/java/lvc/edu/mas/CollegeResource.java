@@ -16,9 +16,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Path("colleges")
 public class CollegeResource implements Serializable{
+    private static final long serialVersionUID = 5433642707948469965L;
     private static ConcurrentHashMap<Integer,College> collegeConcurrentHashMap = new ConcurrentHashMap<>();
-    public static AtomicInteger id = new AtomicInteger(0);
-    public static ConcurrentHashMap<Integer, College> storeColleges(ConcurrentHashMap<Integer,College> database) throws IOException {
+    private static AtomicInteger id = new AtomicInteger(0);
+    private static ConcurrentHashMap<Integer, College> storeColleges(ConcurrentHashMap<Integer,College> database) throws IOException {
         File file = new File("colleges.txt");
         FileOutputStream out = new FileOutputStream(file);
         ObjectOutputStream os = new ObjectOutputStream(out);

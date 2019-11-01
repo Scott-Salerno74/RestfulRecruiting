@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Path("recruits")
 public class RecruitResource implements Serializable{
+    private static final long serialVersionUID = 4779309724719730176L;
     private static ConcurrentHashMap<Integer,Recruit> recruitConcurrentHashMap = new ConcurrentHashMap<>();
     public static  AtomicInteger id = new AtomicInteger(0);
     public static ConcurrentHashMap<Integer, Recruit> storeRecruits(ConcurrentHashMap<Integer,Recruit> database) throws IOException {

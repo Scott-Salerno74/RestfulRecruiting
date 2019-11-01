@@ -17,9 +17,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @Path("recruitedPage")
 public class RecruitmentDataResource implements Serializable {
+    private static final long serialVersionUID = 2123723517170647427L;
     private static ConcurrentHashMap<Integer,RecruitedClass> dataConcurrentHashMap = new ConcurrentHashMap<>();
-    public static  AtomicInteger id = new AtomicInteger(0);
-    public static ConcurrentHashMap<Integer, RecruitedClass> storeRecruited(ConcurrentHashMap<Integer,RecruitedClass> database) throws IOException {
+    private static  AtomicInteger id = new AtomicInteger(0);
+    private static ConcurrentHashMap<Integer, RecruitedClass> storeRecruited(ConcurrentHashMap<Integer,RecruitedClass> database) throws IOException {
         File file = new File("recruitedData.txt");
         FileOutputStream out = new FileOutputStream(file);
         ObjectOutputStream os = new ObjectOutputStream(out);
