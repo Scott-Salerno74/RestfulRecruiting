@@ -81,15 +81,45 @@ public class CollegeResource implements Serializable{
         System.out.println(c.getName() + " " + c.getLocation());
         System.out.println(collegeConcurrentHashMap.get(2).getName() + " " + collegeConcurrentHashMap.get(2).getId() );
     }
+    // For Specific Player Ids
+
     @Path("/{id}")
     @PUT
     @Produces("application/json")
-    public void changeCollegeInfo(@PathParam("id") int id, String update) throws ParseException {
-        JSONParser parser = new JSONParser();
-        JSONObject college = (JSONObject) parser.parse(update);
-        System.out.println(college.toJSONString());
+    public void changeCollegeInfo(@PathParam("id") int id, String update) throws ParseException, IOException {
+        JSONParser parse = new JSONParser();
+        JSONObject obj = new JSONObject();
+        obj = (JSONObject) parse.parse(update);
+        if (obj.containsKey("name")){
+            collegeConcurrentHashMap.get(id).setName( obj.get("name").toString());
+        }
+        if (obj.containsKey("location")){
+            collegeConcurrentHashMap.get(id).setLocation( obj.get("location").toString());
+        }
+        if (obj.containsKey("sports")){
+            String collegeString= obj.get("sports").toString();
+            String[] sportsArr = collegeString.split(",");
+            collegeConcurrentHashMap.get(id).setAvailableSports(sportsArr);
+        }
+        if (obj.containsKey("numRecruitLimit")){
+            collegeConcurrentHashMap.get(id).setNumRecruitLimit( Integer.parseInt(obj.get("numRecruitLimit").toString()));
+        }
+
+        storeColleges(collegeConcurrentHashMap);
 
     }
+    @Path("{id}")
+    @GET
+    @Produces("application/json")
+    public String getCollegeById(@PathParam("id") int id) throws IOException, ClassNotFoundException {
+        ObjectMapper mapper = new ObjectMapper();
+        StringBuilder response = new StringBuilder();
+        JSONObject jsonResponse = new JSONObject();
+        response.append(mapper.writeValueAsString(collegeConcurrentHashMap.get(id)));
+        jsonResponse.put("colleges", response);
+        return jsonResponse.toJSONString();
+    }
+
     public static void initCollegeData() throws IOException, ClassNotFoundException {
         File file = new File("colleges.txt");
         FileInputStream in = new FileInputStream(file);
