@@ -27,6 +27,9 @@ public class CollegeResource implements Serializable{
 
         return database;
     }
+    public static  ConcurrentHashMap<Integer,College> getCollegeData(){
+        return collegeConcurrentHashMap;
+    }
     /**
      * Load in database
      * @throws IOException
@@ -139,9 +142,28 @@ public class CollegeResource implements Serializable{
             id = new AtomicInteger(newID);
         }
     }
-    public static void main(String[] args) throws IOException {
-        ConcurrentHashMap<Integer,College> update = storeColleges(collegeConcurrentHashMap);
+    @Path("/query")
+    @GET
+    public String searchColleges(@QueryParam("name") String nameQuery) throws ParseException, IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        StringBuilder response = new StringBuilder();
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonResponse = new JSONObject();
+        //Loop through concurrent hash-map and add to string response
+        for(int i = 0; i <= collegeConcurrentHashMap.size() ;i++){
+            if (collegeConcurrentHashMap.get(i).getName().equalsIgnoreCase(nameQuery)){
+                String json = mapper.writeValueAsString(collegeConcurrentHashMap.get(i));
+                jsonArray.add(json);
+            }
+        }
+        jsonResponse.put("colleges",jsonArray);
+        return jsonResponse.toJSONString();
+
+
     }
+//    public static void main(String[] args) throws IOException {
+//        ConcurrentHashMap<Integer,College> update = storeColleges(collegeConcurrentHashMap);
+//    }
 
 
 }

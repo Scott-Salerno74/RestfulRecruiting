@@ -56,4 +56,8 @@ public College(int id, String name, int numRecruitLimit, String location, String
     public int getNumRecruitLimit() {
         return numRecruitLimit;
     }
+    public int addRecruit(){
+    int limit = getNumRecruitLimit();
+        return limit-1;
+    }
 }

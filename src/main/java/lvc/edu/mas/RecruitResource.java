@@ -28,6 +28,9 @@ public class RecruitResource implements Serializable{
 
         return database;
     }
+    public static ConcurrentHashMap<Integer,Recruit> getRecruitData(){
+        return recruitConcurrentHashMap;
+    }
     /**
      * Load in database
      * @throws IOException
@@ -116,6 +119,46 @@ public class RecruitResource implements Serializable{
         jsonResponse.put("recruit", response);
         return jsonResponse.toJSONString();
     }
+
+    //Get Recruited By
+    @Path("{id}/recruitedBy")
+    @GET
+    public String getRecruitedBy(@PathParam("id") int id ) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        StringBuilder response = new StringBuilder();
+        JSONObject obj = new JSONObject();
+        JSONObject jsonResponse = new JSONObject();
+        response.append(mapper.writeValueAsString(recruitConcurrentHashMap.get(id)));
+        obj.put("College", response);
+        jsonResponse.put("rel", "next");
+        jsonResponse.put("href", Main.BASE_URI +"/colleges/" + id );
+        jsonResponse.put("type","application/json");
+        return jsonResponse.toJSONString();
+
+
+    }
+
+    //Get Query Params
+    @Path("/query")
+    @GET
+    public String searchRecruitBySport(@QueryParam("sport") String sportQuery) throws ParseException, IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        StringBuilder response = new StringBuilder();
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonResponse = new JSONObject();
+        //Loop through concurrent hash-map and add to string response
+        for(int i = 1; i <= recruitConcurrentHashMap.size(); i++){
+            if (recruitConcurrentHashMap.get(i).getSport().equalsIgnoreCase(sportQuery)){
+                String json = mapper.writeValueAsString(recruitConcurrentHashMap.get(i));
+                jsonArray.add(json);
+            }
+        }
+        jsonResponse.put("recruits",jsonArray);
+        return jsonResponse.toJSONString();
+
+
+    }
+
 
     public static void initRecruitData() throws IOException, ClassNotFoundException {
         File file = new File("recruits.txt");
