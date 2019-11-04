@@ -20,14 +20,14 @@ public class RecruitResource implements Serializable{
     private static final long serialVersionUID = 4779309724719730176L;
     private static ConcurrentHashMap<Integer,Recruit> recruitConcurrentHashMap = new ConcurrentHashMap<>();
     public static  AtomicInteger id = new AtomicInteger(0);
-    public static ConcurrentHashMap<Integer, Recruit> storeRecruits(ConcurrentHashMap<Integer,Recruit> database) throws IOException {
+    public static void storeRecruits(ConcurrentHashMap<Integer,Recruit> database) throws IOException {
         File file = new File("recruits.txt");
         FileOutputStream out = new FileOutputStream(file);
         ObjectOutputStream os = new ObjectOutputStream(out);
         os.writeObject(database);
         os.close();
 
-        return database;
+
     }
     public static ConcurrentHashMap<Integer,Recruit> getRecruitData(){
         return recruitConcurrentHashMap;
@@ -74,6 +74,17 @@ public class RecruitResource implements Serializable{
         System.out.println(recruitConcurrentHashMap.get(1).getfName());
     }
     //Methods for specific Id numbers
+    @Path("{id}")
+    @GET
+    @Produces("application/json")
+    public String getCollegeById(@PathParam("id") int id) throws IOException, ClassNotFoundException {
+        ObjectMapper mapper = new ObjectMapper();
+        StringBuilder response = new StringBuilder();
+        JSONObject jsonResponse = new JSONObject();
+        response.append(mapper.writeValueAsString(recruitConcurrentHashMap.get(id)));
+        jsonResponse.put("recruits", response);
+        return jsonResponse.toJSONString();
+    }
     @Path("/{id}")
     @PUT
     @Produces("application/json")
@@ -100,17 +111,6 @@ public class RecruitResource implements Serializable{
             recruitConcurrentHashMap.get(id).setSport( obj.get("sport").toString());
         }
         storeRecruits(recruitConcurrentHashMap);
-    }
-    @Path("{id}")
-    @GET
-    @Produces("application/json")
-    public String getRecruitById(@PathParam("id") int id) throws IOException, ClassNotFoundException {
-        ObjectMapper mapper = new ObjectMapper();
-        StringBuilder response = new StringBuilder();
-        JSONObject jsonResponse = new JSONObject();
-        response.append(mapper.writeValueAsString(recruitConcurrentHashMap.get(id)));
-        jsonResponse.put("recruit", response);
-        return jsonResponse.toJSONString();
     }
 
     //Get Recruited By
@@ -151,6 +151,8 @@ public class RecruitResource implements Serializable{
 
 
     }
+
+
 
 
     public static void initRecruitData() throws IOException, ClassNotFoundException {

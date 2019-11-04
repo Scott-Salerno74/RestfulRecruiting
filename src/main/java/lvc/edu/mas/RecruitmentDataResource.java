@@ -36,19 +36,40 @@ public class RecruitmentDataResource implements Serializable {
      */
     @POST
     @Produces("application/json")
-    public void recruited(String recruitment) throws ParseException {
+    public void recruited(String recruitment) throws ParseException, IOException {
         int newID = id.incrementAndGet();
         JSONParser parse = new JSONParser();
         JSONObject obj = new JSONObject();
         obj = (JSONObject) parse.parse(recruitment);
-        College c = CollegeResource.getCollegeData().get(obj.get("collegeID"));
+        College c = CollegeResource.getCollegeData().get(Integer.parseInt(obj.get("collegeID").toString()));
         c.setNumRecruitLimit( c.addRecruit());
-       Recruit r = RecruitResource.getRecruitData().get(obj.get("recuritID"));
-       r.setRecruited(true);
-       r.setRecruitedBy(c);
+        System.out.println(c.getName() + "recruitment Complete " + c.getNumRecruitLimit());
+        Recruit r = RecruitResource.getRecruitData().get(Integer.parseInt(obj.get("recruitID").toString()));
+        r.setRecruited(true);
+        r.setRecruitedBy(c);
+        System.out.println(r.getRecruitedBy().getName());
         RecruitedClass rC = new RecruitedClass(c,r);
         dataConcurrentHashMap.put(newID,rC);
+        storeRecruited(dataConcurrentHashMap);
+    }
 
+    public static void updateFromData() throws IOException {
+        ConcurrentHashMap<Integer, Recruit> updateR = RecruitResource.getRecruitData();
+        ConcurrentHashMap<Integer, College> updateC = CollegeResource.getCollegeData();
+        Enumeration<Integer> keys = dataConcurrentHashMap.keys();
+        while (keys.hasMoreElements()) {
+            for (int i = 0; i < updateC.size(); i++) {
+                if (dataConcurrentHashMap.get(i).getCollege().getId() == updateC.get(i).getId()) {
+                    updateC.get(i).setNumRecruitLimit(dataConcurrentHashMap.get(i).getCollege().getNumRecruitLimit());
+                    CollegeResource.storeColleges(updateC);
+                }
+                if (dataConcurrentHashMap.get(i).getRecruit().getId() == updateR.get(i).getId()) {
+                    updateR.get(i).setRecruited(dataConcurrentHashMap.get(i).getRecruit().isRecruited());
+                    updateR.get(i).setRecruitedBy(dataConcurrentHashMap.get(i).getRecruit().getRecruitedBy());
+                    RecruitResource.storeRecruits(updateR);
+                }
+            }
+        }
     }
 
     public static void initRecruitedData() throws IOException, ClassNotFoundException {

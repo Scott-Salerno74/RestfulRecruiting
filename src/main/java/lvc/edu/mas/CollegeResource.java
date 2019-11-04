@@ -19,31 +19,23 @@ public class CollegeResource implements Serializable{
     private static final long serialVersionUID = 5433642707948469965L;
     private static ConcurrentHashMap<Integer,College> collegeConcurrentHashMap = new ConcurrentHashMap<>();
     private static AtomicInteger id = new AtomicInteger(0);
-    private static ConcurrentHashMap<Integer, College> storeColleges(ConcurrentHashMap<Integer,College> database) throws IOException {
+    public static void storeColleges(ConcurrentHashMap<Integer, College> database) throws IOException {
         File file = new File("colleges.txt");
         FileOutputStream out = new FileOutputStream(file);
         ObjectOutputStream os = new ObjectOutputStream(out);
         os.writeObject(database);
         os.close();
 
-        return database;
     }
     public static  ConcurrentHashMap<Integer,College> getCollegeData(){
         return collegeConcurrentHashMap;
     }
+
     /**
      * Load in database
      * @throws IOException
      */
 
-    public static ConcurrentHashMap loadColleges() throws IOException, ClassNotFoundException {
-        File file = new File("colleges.txt");
-        FileInputStream in = new FileInputStream(file);
-        ObjectInputStream inS = new ObjectInputStream(in);
-        ConcurrentHashMap<Integer,College> database = (ConcurrentHashMap<Integer, College>) inS.readObject();
-        inS.close();
-        return database;
-    }
 
 
     /**

@@ -27,6 +27,7 @@ public class Main {
         RecruitResource.initRecruitData();
         RecruitmentDataResource.initRecruitedData();
         CollegeResource.initCollegeData();
+        //RecruitmentDataResource.updateFromData();
         // create and start a new instance of grizzly http server
         // exposing the Jersey application at BASE_URI
         return GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
@@ -40,7 +41,7 @@ public class Main {
      */
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
-
+        RecruitmentDataResource.updateFromData();
         final HttpServer server = startServer();
         System.out.println(String.format("Jersey app started with WADL available at "
                 + "%sapplication.wadl\nHit enter to stop it...", BASE_URI));
